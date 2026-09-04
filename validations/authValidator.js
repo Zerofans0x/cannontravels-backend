@@ -34,7 +34,7 @@ const validateRegister = [
 
         body('intent')
         .optional()
-        .isIn(['investor', 'institutional', 'trader']).withMessage('Invalid user intent.'),  
+        .isIn(['investor', 'passenger', 'superadmin']).withMessage('Invalid user intent.'),  
 
     body('referralCode')
         .optional()
@@ -106,7 +106,7 @@ const validateResendVerificationEmail = [
 const validateGoogleAuth = [
     query('intent')
         .notEmpty().withMessage('Auth intent is required.')
-        .isIn(['trader']).withMessage('Invalid auth intent specified.'),
+        .isIn(['investor', 'passenger', 'superadmin']).withMessage('Invalid auth intent specified.'),
     handleValidationErrors
 ];
 
