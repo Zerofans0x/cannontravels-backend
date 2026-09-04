@@ -34,7 +34,7 @@ const validateRegister = [
 
         body('intent')
         .optional()
-        .isIn(['investor', 'passenger', 'superadmin']).withMessage('Invalid user intent.'),  
+        .isIn(['passenger', 'superadmin']).withMessage('Invalid user intent.'),  
 
     body('referralCode')
         .optional()
