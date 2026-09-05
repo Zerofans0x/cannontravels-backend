@@ -32,6 +32,17 @@ const UserSchema = new mongoose.Schema({
     status: { type: String, enum: ['active', 'inactive', 'suspended'], default: 'active' },
     deletionReason: { type: String },
 
+    // models/User.js (Add this inside your UserSchema)
+
+    // --- TRAVEL PREFERENCES (From Onboarding) ---
+    travelProfile: {
+        experienceLevel: { type: String }, // e.g., "Leisure Explorer"
+        cabinPreferences: [{ type: String }], // e.g., ["economy", "business"]
+        primaryGoal: { type: String }, // e.g., "savings", "convenience"
+        riskTolerance: { type: String }, // e.g., "Best Price & Deals"
+        planTier: { type: String, default: 'standard-traveler' }
+    },
+
     // --- FRONTEND HELPERS ---
     postAuthPath: { type: String }, 
 

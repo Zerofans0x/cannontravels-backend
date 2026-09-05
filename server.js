@@ -26,6 +26,8 @@ const startServer = async () => {
         // --- API Route Imports (Updated for CannonTravels) ---
         const authRoutes = require('./routes/authRoutes');
         const bookingRoutes = require('./routes/bookingRoutes'); 
+        const cannonRoutes = require('./routes/cannonRoutes');
+        const flightRoutes = require('./routes/flightRoutes');
         //const paymentRoutes = require('./routes/paymentRoutes'); 
 
         const app = express();
@@ -135,7 +137,9 @@ const startServer = async () => {
         // --- API Mounting ---
         app.use('/api/v1', globalLimiter);
         app.use('/api/v1/auth', authRoutes);
-        app.use('/api/v1/bookings', bookingRoutes); 
+        app.use('/api/v1/bookings', bookingRoutes);
+        app.use('/api/v1/cannon', cannonRoutes);
+        app.use('/api/v1/flight', flightRoutes);
         // app.use('/api/v1/payment', paymentRoutes);
         
         app.use(notFound);
