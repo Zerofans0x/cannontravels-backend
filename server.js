@@ -29,6 +29,7 @@ const startServer = async () => {
         const cannonRoutes = require('./routes/cannonRoutes');
         const flightRoutes = require('./routes/flightRoutes');
         const paymentRoutes = require('./routes/paymentRoutes'); 
+        const dashboardRoutes = require('./routes/dashboardRoutes');
 
         const app = express();
         const server = http.createServer(app);
@@ -141,6 +142,7 @@ const startServer = async () => {
         app.use('/api/v1/cannon', cannonRoutes);
         app.use('/api/v1/flights', flightRoutes);
         app.use('/api/v1/payments', paymentRoutes);
+        app.use('/api/v1/dashboard', dashboardRoutes);
         
         app.use(notFound);
 
