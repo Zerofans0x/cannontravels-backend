@@ -32,7 +32,7 @@ const { authenticate } = require('../middleware/authMiddleware');
 router.get('/me', authenticate, getMe);
 
 // --- Auth Routes ---
-router.post('/register', validateRegister, authLimiter, registerUser);
+router.post('/register', authLimiter, registerUser);
 router.post('/login', validateLogin, authLimiter, loginUser);
 router.post('/logout', authenticate, logoutUser);
 router.post('/refresh-token', refreshToken); 
