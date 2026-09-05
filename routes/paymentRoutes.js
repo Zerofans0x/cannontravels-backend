@@ -1,13 +1,17 @@
-// File: routes/paymentRoutes.js
+
+
+
 const express = require('express');
 const router = express.Router();
-const { 
-    subscribeToPlanCrypto, 
-    verifySubscriptionCrypto 
-} = require('../controllers/subscriptionController');
-const { authenticate } = require('../middleware/authMiddleware'); // Assuming you use auth protection middleware
+const {
+    initializeBookingPayment,
+    verifyBookingPayment
+} = require('../controllers/flightPaymentController');
+const { authenticate } = require('../middleware/authMiddleware');
 
-router.post('/crypto/subscribe', authenticate, subscribeToPlanCrypto);
-router.post('/crypto/verify', authenticate, verifySubscriptionCrypto);
+router.use(authenticate);
+
+router.post('/initialize', initializeBookingPayment);
+router.post('/verify', verifyBookingPayment);
 
 module.exports = router;

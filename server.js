@@ -28,7 +28,7 @@ const startServer = async () => {
         const bookingRoutes = require('./routes/bookingRoutes'); 
         const cannonRoutes = require('./routes/cannonRoutes');
         const flightRoutes = require('./routes/flightRoutes');
-        //const paymentRoutes = require('./routes/paymentRoutes'); 
+        const paymentRoutes = require('./routes/paymentRoutes'); 
 
         const app = express();
         const server = http.createServer(app);
@@ -140,7 +140,7 @@ const startServer = async () => {
         app.use('/api/v1/bookings', bookingRoutes);
         app.use('/api/v1/cannon', cannonRoutes);
         app.use('/api/v1/flights', flightRoutes);
-        // app.use('/api/v1/payment', paymentRoutes);
+        app.use('/api/v1/payment', paymentRoutes);
         
         app.use(notFound);
 
