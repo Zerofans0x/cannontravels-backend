@@ -31,6 +31,7 @@ const startServer = async () => {
         const paymentRoutes = require('./routes/paymentRoutes'); 
         const dashboardRoutes = require('./routes/dashboardRoutes');
         const transactionRoutes = require('./routes/transactionRoutes');
+        const profileRoutes = require('./routes/profileRoutes');
 
         const app = express();
         const server = http.createServer(app);
@@ -58,7 +59,6 @@ const startServer = async () => {
         io.on('connection', (socket) => {
             logger.info(`🔌 Socket Connected: ${socket.id}`);
 
-            // Both Passenger and Third-Party Payer join a room via tracking code
             socket.on('join_tracking_room', ({ trackingCode }) => {
                 if (trackingCode) {
                     const roomName = `track_${trackingCode}`;
@@ -67,12 +67,10 @@ const startServer = async () => {
                 }
             });
 
-            // Passenger app emits location, server broadcasts to the payer
             socket.on('location_update', (data) => {
                 const { trackingCode, lat, lng, speed, heading } = data;
                 if (trackingCode) {
                     const roomName = `track_${trackingCode}`;
-                    // socket.to() sends to everyone in the room EXCEPT the sender
                     socket.to(roomName).emit('passenger_location', {
                         lat,
                         lng,
@@ -88,6 +86,59 @@ const startServer = async () => {
             });
         });
 
+        // 🟢 3. Live Flight Radar Background Poller (OpenSky + Fallback Simulator)
+        const { getLiveFlightPosition } = require('./services/liveFlightService');
+        const Booking = require('./models/Booking');
+
+        // In-memory tracker to keep simulated planes moving smoothly during tests
+        const simulatedPositions = new Map();
+
+        setInterval(async () => {
+            try {
+                // Find all paid bookings currently being tracked
+                const activeBookings = await Booking.find({ paymentStatus: 'paid' }).select('trackingCode flightNumber');
+                
+                for (const booking of activeBookings) {
+                    if (!booking.trackingCode) continue;
+
+                    const roomName = `track_${booking.trackingCode}`;
+                    let liveData = await getLiveFlightPosition(booking.flightNumber);
+
+                    // Fallback: If OpenSky has no record of this test flight, simulate smooth movement
+                    if (!liveData) {
+                        let current = simulatedPositions.get(booking.trackingCode) || { 
+                            lat: 6.5244, // Starts near Lagos
+                            lng: 3.3792, 
+                            heading: 65, 
+                            speed: 480, 
+                            altitude: 36000 
+                        };
+                        
+                        // Increment coordinates slightly every 3 seconds to simulate flight progress
+                        current.lat += 0.002;
+                        current.lng += 0.004;
+                        current.heading = (current.heading + 1) % 360;
+
+                        simulatedPositions.set(booking.trackingCode, current);
+                        liveData = { ...current };
+                    }
+
+                    // Broadcast real or simulated coordinates to everyone in the tracking room
+                    io.to(roomName).emit('passenger_location', {
+                        lat: liveData.lat,
+                        lng: liveData.lng,
+                        speed: liveData.speed || 480,
+                        heading: liveData.heading || 90,
+                        altitude: liveData.altitude || 36000,
+                        timestamp: new Date().toISOString()
+                    });
+                }
+            } catch (err) {
+                console.error("Background Radar Polling Error:", err.message);
+            }
+        }, 3000); // Broadcasts updates every 3 seconds for smooth visual radar testing
+
+        
         // --- Express Middlewares ---
         app.set('trust proxy', 1);
         app.use(helmet());
@@ -145,6 +196,7 @@ const startServer = async () => {
         app.use('/api/v1/payments', paymentRoutes);
         app.use('/api/v1/dashboard', dashboardRoutes);
         app.use('/api/v1/transactions', transactionRoutes);
+        app.use('/api/v1/profile', profileRoutes);
         
         app.use(notFound);
 
