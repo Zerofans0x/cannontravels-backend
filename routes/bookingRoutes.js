@@ -3,7 +3,8 @@ const router = express.Router();
 const {
     createBooking,
     getDelegatedBooking,
-    getUserBookings
+    getUserBookings,
+    getDelegatedRequests
 } = require('../controllers/bookingController');
 
 // Authentication middleware (ensure you have this from your auth setup)
@@ -23,5 +24,8 @@ router.post('/', createBooking);
 
 // Fetch passenger's own bookings
 router.get('/my-bookings', getUserBookings);
+
+// Fetch delegated payment requests for the logged-in user's email
+router.get('/delegated-requests', getDelegatedRequests);
 
 module.exports = router;

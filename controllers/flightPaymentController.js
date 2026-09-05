@@ -137,4 +137,74 @@ const verifyBookingPayment = asyncHandler(async (req, res) => {
     }
 });
 
-module.exports = { initializeBookingPayment, verifyBookingPayment };
+
+// @desc    Initialize payment for a delegated flight booking (Third-Party Sponsor)
+// @route   POST /api/v1/payments/initialize-delegated
+// @access  Public (No JWT Required)
+const initializeDelegatedPayment = asyncHandler(async (req, res) => {
+    const { trackingCode, gateway } = req.body;
+
+    const booking = await Booking.findOne({ trackingCode }).populate('passenger', 'firstName lastName email');
+    if (!booking) {
+        res.status(404);
+        throw new Error('Booking not found or invalid tracking code.');
+    }
+
+    if (booking.paymentStatus === 'paid') {
+        res.status(400);
+        throw new Error('This booking has already been paid for.');
+    }
+
+    const orderId = `DLG-TRK-${booking.bookingReference}-${Date.now().toString().slice(-4)}`;
+    let frontendCallback = `${process.env.FRONTEND_URL || 'https://cannontravels.com'}/pay/${trackingCode}?payment=success`;
+
+    try {
+        // Use passenger user object or fallback representation for gateway metadata
+        const payerMockUser = {
+            email: booking.payerEmail,
+            _id: booking.passenger._id
+        };
+
+        const { invoice, providerName } = await paymentService.initializePayment(
+            payerMockUser,
+            booking.amount,
+            booking.currency || 'USD',
+            orderId,
+            { bookingId: booking._id.toString(), flightNumber: booking.flightNumber, type: 'delegated' },
+            frontendCallback,
+            gateway
+        );
+
+        // Record transaction
+        await Transaction.create({
+            user: booking.passenger._id,
+            reference: invoice.id,
+            orderId: orderId,
+            amount: booking.amount,
+            currency: booking.currency || 'USD',
+            status: 'pending',
+            type: 'subscription',
+            planType: 'custom',
+            gateway: providerName,
+        });
+
+        res.status(200).json({
+            success: true,
+            checkoutUrl: invoice.checkoutLink,
+            invoiceId: invoice.id,
+            orderId,
+            gatewayUsed: providerName
+        });
+
+    } catch (error) {
+        console.error("Delegated Payment Init Error:", error);
+        res.status(500);
+        throw new Error('Could not initiate delegated payment gateway.');
+    }
+});
+
+module.exports = { 
+    initializeBookingPayment, 
+    verifyBookingPayment, 
+    initializeDelegatedPayment 
+};

@@ -118,8 +118,25 @@ const getUserBookings = asyncHandler(async (req, res) => {
     });
 });
 
+// @desc    Get all delegated payment requests for the logged-in user's email
+// @route   GET /api/v1/bookings/delegated-requests
+// @access  Private
+const getDelegatedRequests = asyncHandler(async (req, res) => {
+    const userEmail = req.user.email;
+    const bookings = await Booking.find({ payerEmail: userEmail })
+        .populate('passenger', 'firstName lastName avatarUrl')
+        .sort({ createdAt: -1 });
+
+    res.status(200).json({
+        success: true,
+        count: bookings.length,
+        data: bookings
+    });
+});
+
 module.exports = {
     createBooking,
     getDelegatedBooking,
-    getUserBookings
+    getUserBookings,
+    getDelegatedRequests
 };
