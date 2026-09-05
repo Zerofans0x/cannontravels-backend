@@ -185,9 +185,23 @@ const seedFlights = asyncHandler(async (req, res) => {
     });
 });
 
+// @desc    Get all active flight schedules
+// @route   GET /api/v1/flights/schedule
+// @access  Private
+const getFlightSchedules = asyncHandler(async (req, res) => {
+    const flights = await Flight.find({}).sort({ departureTime: 1 });
+    res.status(200).json({
+        success: true,
+        count: flights.length,
+        flights
+    });
+});
+
+
 module.exports = {
     getFlights,
     getFlightById,
     createFlight,
-    seedFlights
+    seedFlights,
+    getFlightSchedules
 };

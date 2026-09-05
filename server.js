@@ -30,6 +30,7 @@ const startServer = async () => {
         const flightRoutes = require('./routes/flightRoutes');
         const paymentRoutes = require('./routes/paymentRoutes'); 
         const dashboardRoutes = require('./routes/dashboardRoutes');
+        const transactionRoutes = require('./routes/transactionRoutes');
 
         const app = express();
         const server = http.createServer(app);
@@ -143,6 +144,7 @@ const startServer = async () => {
         app.use('/api/v1/flights', flightRoutes);
         app.use('/api/v1/payments', paymentRoutes);
         app.use('/api/v1/dashboard', dashboardRoutes);
+        app.use('/api/v1/transactions', transactionRoutes);
         
         app.use(notFound);
 
