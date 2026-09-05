@@ -139,7 +139,7 @@ const startServer = async () => {
         app.use('/api/v1/auth', authRoutes);
         app.use('/api/v1/bookings', bookingRoutes);
         app.use('/api/v1/cannon', cannonRoutes);
-        app.use('/api/v1/flight', flightRoutes);
+        app.use('/api/v1/flights', flightRoutes);
         // app.use('/api/v1/payment', paymentRoutes);
         
         app.use(notFound);
