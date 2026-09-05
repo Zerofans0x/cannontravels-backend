@@ -10,7 +10,7 @@ const { sendEmail } = require('../services/emailService');
 // Helper for dynamic local/production client URLs
 const getClientUrl = () => {
     return process.env.FRONTEND_URL || (process.env.NODE_ENV === 'production' 
-        ? 'https://www.cannontravels.com' 
+        ? 'https://cannontravel.onrender.com' 
         : 'http://localhost:3000');
 };
 
