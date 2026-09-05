@@ -16,7 +16,7 @@ const {
 } = require('../controllers/authController');
 
 const {
-    validateRegister,
+    //validateRegister,
     validateLogin,
     validateForgotPassword,
     validateResetPassword,
