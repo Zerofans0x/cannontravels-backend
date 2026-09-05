@@ -243,7 +243,7 @@ const initializeBookingPayment = asyncHandler(async (req, res) => {
     }
 
     const orderId = `FLT-TRK-${booking.bookingReference}-${Date.now().toString().slice(-4)}`;
-    let frontendCallback = `${getClientUrl()}/dashboard/bookings?payment=success&orderId=${orderId}`;
+let frontendCallback = `${getClientUrl()}/subscription-success?orderId=${orderId}&reference=${orderId}`;
 
     try {
         const metadata = { bookingId: booking._id.toString(), flightNumber: booking.flightNumber };
