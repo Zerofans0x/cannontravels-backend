@@ -2,6 +2,68 @@ const asyncHandler = require('express-async-handler');
 const Booking = require('../models/Booking');
 const { sendEmail } = require('../services/emailService');
 
+// // @desc    Create a new flight booking
+// // @route   POST /api/v1/bookings
+// // @access  Private (Passenger)
+// const createBooking = asyncHandler(async (req, res) => {
+//     const { 
+//         flightNumber, 
+//         origin, 
+//         destination, 
+//         departureTime, 
+//         amount, 
+//         paymentMethod, 
+//         payerEmail 
+//     } = req.body;
+
+//     // 1. Validate delegated payment requirements
+//     if (paymentMethod === 'delegated' && !payerEmail) {
+//         res.status(400);
+//         throw new Error('Payer email is required for delegated payments.');
+//     }
+
+//     // 2. Create the Booking
+//     const booking = await Booking.create({
+//         passenger: req.user.id,
+//         flightNumber,
+//         origin,
+//         destination,
+//         departureTime,
+//         amount,
+//         paymentMethod,
+//         payerEmail: paymentMethod === 'delegated' ? payerEmail : undefined
+//     });
+
+//     // 3. Handle Delegated Payment Flow (Third-Party)
+//     if (booking.paymentMethod === 'delegated') {
+//         const frontendUrl = process.env.FRONTEND_URL || 'https://cannongo.top';
+//         const paymentLink = `${frontendUrl}/pay/${booking.trackingCode}`;
+
+//         // Send email to the third party requesting payment
+//         await sendEmail({
+//             subject: `${req.user.firstName} requested you to pay for a flight`,
+//             send_to: booking.payerEmail,
+//             sent_from: "CannonTravels Payments <billing@cannongo.top>",
+//             reply_to: "support@cannongo.top",
+//             templateKey: process.env.ZEPTO_TEMPLATE_DELEGATED_PAYMENT,
+//             extraParams: { 
+//                 passenger_name: `${req.user.firstName} ${req.user.lastName}`,
+//                 flight_number: booking.flightNumber,
+//                 amount: booking.amount,
+//                 action_url: paymentLink 
+//             }
+//         }).catch(err => console.error("Delegated Payment Email fail:", err));
+//     }
+
+//     res.status(201).json({
+//         success: true,
+//         message: booking.paymentMethod === 'delegated' 
+//             ? 'Booking created. Payment request sent to third party.'
+//             : 'Booking created. Proceed to checkout.',
+//         data: booking
+//     });
+// });
+
 // @desc    Create a new flight booking
 // @route   POST /api/v1/bookings
 // @access  Private (Passenger)
@@ -16,13 +78,14 @@ const createBooking = asyncHandler(async (req, res) => {
         payerEmail 
     } = req.body;
 
-    // 1. Validate delegated payment requirements
     if (paymentMethod === 'delegated' && !payerEmail) {
         res.status(400);
         throw new Error('Payer email is required for delegated payments.');
     }
 
-    // 2. Create the Booking
+    // 🟢 FETCH THE FULL USER RECORD HERE
+    const passengerUser = await User.findById(req.user.id);
+
     const booking = await Booking.create({
         passenger: req.user.id,
         flightNumber,
@@ -34,20 +97,19 @@ const createBooking = asyncHandler(async (req, res) => {
         payerEmail: paymentMethod === 'delegated' ? payerEmail : undefined
     });
 
-    // 3. Handle Delegated Payment Flow (Third-Party)
     if (booking.paymentMethod === 'delegated') {
         const frontendUrl = process.env.FRONTEND_URL || 'https://cannongo.top';
         const paymentLink = `${frontendUrl}/pay/${booking.trackingCode}`;
 
-        // Send email to the third party requesting payment
+        // 🟢 USE THE FETCHED USER RECORD FOR THE NAMES
         await sendEmail({
-            subject: `${req.user.firstName} requested you to pay for a flight`,
+            subject: `${passengerUser.firstName} requested you to pay for a flight`,
             send_to: booking.payerEmail,
             sent_from: "CannonTravels Payments <billing@cannongo.top>",
             reply_to: "support@cannongo.top",
             templateKey: process.env.ZEPTO_TEMPLATE_DELEGATED_PAYMENT,
             extraParams: { 
-                passenger_name: `${req.user.firstName} ${req.user.lastName}`,
+                passenger_name: `${passengerUser.firstName} ${passengerUser.lastName}`,
                 flight_number: booking.flightNumber,
                 amount: booking.amount,
                 action_url: paymentLink 

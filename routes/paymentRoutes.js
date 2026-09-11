@@ -5,12 +5,16 @@
 // const router = express.Router();
 // const {
 //     initializeBookingPayment,
-//     verifyBookingPayment
+//     verifyBookingPayment,
+//     initializeDelegatedPayment
 // } = require('../controllers/flightPaymentController');
 // const { authenticate } = require('../middleware/authMiddleware');
 
-// router.use(authenticate);
+// // Public route for third-party sponsors
+// router.post('/initialize-delegated', initializeDelegatedPayment);
 
+// // Protected routes
+// router.use(authenticate);
 // router.post('/initialize', initializeBookingPayment);
 // router.post('/verify', verifyBookingPayment);
 
@@ -26,12 +30,12 @@ const {
 } = require('../controllers/flightPaymentController');
 const { authenticate } = require('../middleware/authMiddleware');
 
-// Public route for third-party sponsors
+// --- Public Routes (No Token Required) ---
 router.post('/initialize-delegated', initializeDelegatedPayment);
+router.post('/verify', verifyBookingPayment); 
 
-// Protected routes
-router.use(authenticate);
+// --- Protected Routes (Requires Token) ---
+router.use(authenticate); // Everything below this line is protected
 router.post('/initialize', initializeBookingPayment);
-router.post('/verify', verifyBookingPayment);
 
 module.exports = router;
