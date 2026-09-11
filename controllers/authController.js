@@ -130,8 +130,8 @@
 //     sendEmail({
 //         subject: 'Verify Your CannonTravels Account', 
 //         send_to: user.email,
-//         sent_from: "CannonTravels <support@cannontravels.com>",
-//         reply_to: "support@cannontravels.com",
+//         sent_from: "CannonTravels <support@cannongo.top>",
+//         reply_to: "support@cannongo.top",
 //         templateKey: process.env.ZEPTO_TEMPLATE_VERIFY,
 //         extraParams: { name: user.firstName, code: otp, action_url: '#' }
 //     }).catch(err => console.error("Verification Email fail:", err));
@@ -231,8 +231,8 @@
 //         await sendEmail({
 //             subject: 'Resend: Verification Code',
 //             send_to: user.email,
-//             sent_from: "CannonTravels <support@cannontravels.com>",
-//             reply_to: "support@cannontravels.com",
+//             sent_from: "CannonTravels <support@cannongo.top>",
+//             reply_to: "support@cannongo.top",
 //             templateKey: process.env.ZEPTO_TEMPLATE_VERIFY,
 //             extraParams: { name: user.firstName, code: otp }
 //         });
@@ -259,8 +259,8 @@
 //         await sendEmail({
 //             subject: 'Reset Your Password Code',
 //             send_to: user.email,
-//             sent_from: "CannonTravels <support@cannontravels.com>",
-//             reply_to: "support@cannontravels.com",
+//             sent_from: "CannonTravels <support@cannongo.top>",
+//             reply_to: "support@cannongo.top",
 //             templateKey: process.env.ZEPTO_TEMPLATE_RESET,
 //             extraParams: { name: user.firstName, code: otp }
 //         });
@@ -354,7 +354,6 @@
 // };
 
 
-
 const asyncHandler = require('express-async-handler');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -362,8 +361,7 @@ const crypto = require('crypto');
 const User = require('../models/User');
 const generateTokens = require('../utils/generateTokens');
 const { MAX_LOGIN_ATTEMPTS, LOCK_TIME } = require('../config/constants');
-// Commented out temporarily until ZeptoMail is configured
-// const { sendEmail } = require('../services/emailService');
+const { sendEmail } = require('../services/emailService'); // 🟢 Uncommented
 
 // --- HELPER: Generate 6-Digit OTP ---
 const generateOTP = () => {
@@ -468,7 +466,7 @@ const registerUser = asyncHandler(async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    let userRole = (intent === 'superadmin') ? 'superadmin' : 'passenger'; // Default to 'passenger' for standard registration
+    let userRole = (intent === 'superadmin') ? 'superadmin' : 'passenger'; 
 
     const otp = generateOTP();
     const hashedOTP = hashOTP(otp); 
@@ -479,29 +477,25 @@ const registerUser = asyncHandler(async (req, res) => {
         email,
         passwordHash,
         authMethod: 'local',
-        role: userRole, // Hardcoded safely for standard registration
+        role: userRole, 
         referredBy: referrerId, 
         emailVerificationToken: hashedOTP,
         emailVerificationTokenExpires: Date.now() + 15 * 60 * 1000,
     });
 
-    // --- TEMPORARILY COMMENTED OUT FOR ZEPTOMAIL SETUP ---
-    /*
+    // 🟢 ZeptoMail Dispatch (Uncommented & updated)
     sendEmail({
         subject: 'Verify Your CannonTravels Account', 
         send_to: user.email,
-        sent_from: "CannonTravels <support@cannontravels.com>",
-        reply_to: "support@cannontravels.com",
+        sent_from: "CannonTravels <hello@cannongo.top>",
+        reply_to: "hello@cannongo.top",
         templateKey: process.env.ZEPTO_TEMPLATE_VERIFY,
         extraParams: { name: user.firstName, code: otp, action_url: '#' }
     }).catch(err => console.error("Verification Email fail:", err));
-    */
-    // Log OTP to console during development so you can still test verification flow
-    console.log(`[DEV MODE] Verification OTP for ${user.email}: ${otp}`);
 
     res.status(201).json({
         success: true,
-        message: 'Registration successful. (Email dispatch temporarily bypassed for setup)',
+        message: 'Registration successful.',
         email: user.email
     });
 });
@@ -590,14 +584,13 @@ const resendVerificationEmail = asyncHandler(async (req, res) => {
     user.emailVerificationTokenExpires = Date.now() + 15 * 60 * 1000;
     await user.save();
     
-    // --- TEMPORARILY COMMENTED OUT FOR ZEPTOMAIL SETUP ---
-    /*
+    // 🟢 ZeptoMail Dispatch (Uncommented & updated)
     try {
         await sendEmail({
             subject: 'Resend: Verification Code',
             send_to: user.email,
-            sent_from: "CannonTravels <support@cannontravels.com>",
-            reply_to: "support@cannontravels.com",
+            sent_from: "CannonTravels <hello@cannongo.top>",
+            reply_to: "hello@cannongo.top",
             templateKey: process.env.ZEPTO_TEMPLATE_VERIFY,
             extraParams: { name: user.firstName, code: otp }
         });
@@ -605,9 +598,6 @@ const resendVerificationEmail = asyncHandler(async (req, res) => {
     } catch (error) {
         res.status(500); throw new Error('Email could not be sent.');
     }
-    */
-    console.log(`[DEV MODE] Resend Verification OTP for ${user.email}: ${otp}`);
-    res.status(200).json({ message: 'Verification code sent. (Email dispatch bypassed)' });
 });
 
 // --- FORGOT PASSWORD ---
@@ -623,14 +613,13 @@ const forgotPassword = asyncHandler(async (req, res) => {
     user.resetPasswordExpires = Date.now() + 15 * 60 * 1000;
     await user.save();
     
-    // --- TEMPORARILY COMMENTED OUT FOR ZEPTOMAIL SETUP ---
-    /*
+    // 🟢 ZeptoMail Dispatch (Uncommented & updated)
     try {
         await sendEmail({
             subject: 'Reset Your Password Code',
             send_to: user.email,
-            sent_from: "CannonTravels <support@cannontravels.com>",
-            reply_to: "support@cannontravels.com",
+            sent_from: "CannonTravels <hello@cannongo.top>",
+            reply_to: "hello@cannongo.top",
             templateKey: process.env.ZEPTO_TEMPLATE_RESET,
             extraParams: { name: user.firstName, code: otp }
         });
@@ -638,9 +627,6 @@ const forgotPassword = asyncHandler(async (req, res) => {
     } catch (error) { 
         res.status(500); throw new Error('Email could not be sent.');
     }
-    */
-    console.log(`[DEV MODE] Password Reset OTP for ${user.email}: ${otp}`);
-    res.status(200).json({ message: 'Reset code sent if account exists. (Email dispatch bypassed)' });
 });
 
 // --- RESET PASSWORD ---

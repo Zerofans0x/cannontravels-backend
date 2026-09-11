@@ -66,8 +66,8 @@
 //         sendEmail({
 //             subject: `Complete Payment for Flight ${booking.flightNumber} ✈`,
 //             send_to: user.email,
-//             sent_from: "CannonTravels Payments <billing@cannontravels.com>",
-//             reply_to: "support@cannontravels.com",
+//             sent_from: "CannonTravels Payments <billing@cannongo.top>",
+//             reply_to: "support@cannongo.top",
 //             templateKey: process.env.ZEPTO_TEMPLATE_CHECKOUT_INTENT,
 //             extraParams: {
 //                 name: user.firstName,
@@ -155,8 +155,8 @@
 //                     sendEmail({
 //                         subject: `Flight Itinerary Confirmed & Boarding Pass Ready - ${booking.flightNumber} ✈`,
 //                         send_to: recipientEmail,
-//                         sent_from: "CannonTravels Confirmations <confirmations@cannontravels.com>",
-//                         reply_to: "support@cannontravels.com",
+//                         sent_from: "CannonTravels Confirmations <confirmations@cannongo.top>",
+//                         reply_to: "support@cannongo.top",
 //                         templateKey: process.env.ZEPTO_TEMPLATE_BOOKING_CONFIRMATION,
 //                         extraParams: {
 //                             name: passengerName,
@@ -336,8 +336,8 @@ const initializeBookingPayment = asyncHandler(async (req, res) => {
         sendEmail({
             subject: `Complete Payment for Flight ${booking.flightNumber} ✈`,
             send_to: user.email,
-            sent_from: "CannonTravels Payments <billing@cannontravels.com>",
-            reply_to: "support@cannontravels.com",
+            sent_from: "CannonTravels Payments <billing@cannongo.top>",
+            reply_to: "support@cannongo.top",
             templateKey: process.env.ZEPTO_TEMPLATE_CHECKOUT_INTENT,
             extraParams: {
                 name: user.firstName,
@@ -427,8 +427,8 @@ const verifyBookingPayment = asyncHandler(async (req, res) => {
                     sendEmail({
                         subject: `Flight Itinerary Confirmed & Boarding Pass Ready - ${booking.flightNumber} ✈`,
                         send_to: recipientEmail,
-                        sent_from: "CannonTravels Confirmations <confirmations@cannontravels.com>",
-                        reply_to: "support@cannontravels.com",
+                        sent_from: "CannonTravels Confirmations <confirmations@cannongo.top>",
+                        reply_to: "support@cannongo.top",
                         templateKey: process.env.ZEPTO_TEMPLATE_BOOKING_CONFIRMATION,
                         extraParams: {
                             name: passengerName,

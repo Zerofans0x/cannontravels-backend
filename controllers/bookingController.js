@@ -43,8 +43,8 @@ const createBooking = asyncHandler(async (req, res) => {
         await sendEmail({
             subject: `${req.user.firstName} requested you to pay for a flight`,
             send_to: booking.payerEmail,
-            sent_from: "CannonTravels Payments <billing@cannontravels.com>",
-            reply_to: "support@cannontravels.com",
+            sent_from: "CannonTravels Payments <billing@cannongo.top>",
+            reply_to: "support@cannongo.top",
             templateKey: process.env.ZEPTO_TEMPLATE_DELEGATED_PAYMENT,
             extraParams: { 
                 passenger_name: `${req.user.firstName} ${req.user.lastName}`,

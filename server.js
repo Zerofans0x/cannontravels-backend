@@ -219,7 +219,7 @@ const startServer = async () => {
         // --- Start Server ---
         const PORT = process.env.PORT || 5001;
         server.listen(PORT, () => {
-            logger.info(`🚀 CannonTravels Core running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+            logger.info(`🚀 CannonGo Core running in ${process.env.NODE_ENV} mode on port ${PORT}`);
         });
 
     } catch (error) {
