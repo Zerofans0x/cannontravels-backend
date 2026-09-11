@@ -36,7 +36,7 @@ const createBooking = asyncHandler(async (req, res) => {
 
     // 3. Handle Delegated Payment Flow (Third-Party)
     if (booking.paymentMethod === 'delegated') {
-        const frontendUrl = process.env.FRONTEND_URL || 'https://cannontravels.com';
+        const frontendUrl = process.env.FRONTEND_URL || 'https://cannongo.top';
         const paymentLink = `${frontendUrl}/pay/${booking.trackingCode}`;
 
         // Send email to the third party requesting payment
