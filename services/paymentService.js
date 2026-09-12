@@ -12,7 +12,7 @@ const gateways = {
 
 const getActiveProvider = async () => {
     const settings = await Settings.findOne({ singleton: 'main_settings' });
-    const activeProvider = settings?.incomingPaymentProvider || 'paystack';
+    const activeProvider = settings?.incomingPaymentProvider || 'nowpayments'; // Default to nowpayments if not set
     return activeProvider;
 };
 
